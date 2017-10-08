@@ -8,9 +8,13 @@ import { Recipe } from '../recipe';
   styleUrls: ['./recipe-list.component.css']
 })
 export class RecipeListComponent implements OnInit {
-  recipes: Recipe[] = [];
+  recipes: Recipe[] = [
+    new Recipe('Schnitzel', 'Very tasty',
+      'https://static4.depositphotos.com/1012068/297/i/950/depositphotos_2970374-stock-photo-viennese-schnitzel-escalope.jpg', []),
+    new Recipe('Summer Salad', 'Okayish',
+      'https://ohmyveggies.com/wp-content/uploads/2013/06/the_perfect_summer_salad.jpg', [])
+  ];
   @Output() recipeSelected = new EventEmitter<Recipe>();
-  recipe = new Recipe('Dummy', 'Dummy', 'http://thumbs1.ebaystatic.com/d/l225/m/mfXELL6zPWJE4OC0agiXMZw.jpg');
   constructor() { }
 
   ngOnInit() {

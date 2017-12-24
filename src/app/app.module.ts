@@ -10,6 +10,7 @@ import { RecipeItemComponent, RecipeListComponent } from './recipes/recipe-list'
 import { ShoppingListAddComponent, ShoppingListComponent } from './shopping-list/';
 import { RecipeDetailComponent } from './recipes/recipe-detail/recipe-detail.component';
 import { DropdownDirective } from './dropdown.directive';
+import { RecipeService } from './recipes/recipe.service';
 
 @NgModule({
   declarations: [
@@ -31,7 +32,9 @@ import { DropdownDirective } from './dropdown.directive';
   schemas: [
     CUSTOM_ELEMENTS_SCHEMA
   ],
-  providers: [],
+  providers: [
+    RecipeService
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

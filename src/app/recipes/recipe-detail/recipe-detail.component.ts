@@ -15,6 +15,7 @@ export class RecipeDetailComponent implements OnInit, OnDestroy {
   @Input() selectedRecipe: Recipe;
 
   id: number;
+  omg: string;
 
   constructor(private sls: ShoppingListService,
     private activatedRoute: ActivatedRoute, private recipeService: RecipeService) {
@@ -23,13 +24,16 @@ export class RecipeDetailComponent implements OnInit, OnDestroy {
         this.id = Number(param.id);
       }
     );
+    activatedRoute.queryParams.subscribe(
+      (param: any) => {
+        this.omg = param.analytics;
+      }
+    );
   }
 
   ngOnInit() {
-    console.log(this.id, 'id');
     if (this.id) {
       this.selectedRecipe = this.recipeService.getRecipeById(this.id);
-      console.log(this.selectedRecipe);
     }
   }
 

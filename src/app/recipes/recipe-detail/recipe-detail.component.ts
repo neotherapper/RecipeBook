@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy, Input } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs/Subscription';
 
 import { Recipe } from '../recipe';
@@ -12,16 +12,16 @@ import { RecipeService } from '../recipe.service';
 })
 export class RecipeDetailComponent implements OnInit, OnDestroy {
   private subscription: Subscription;
+  private recipeIndex: number;
   @Input() selectedRecipe: Recipe;
 
-  id: number;
   omg: string;
 
-  constructor(private sls: ShoppingListService,
+  constructor(private sls: ShoppingListService, private router: Router,
     private activatedRoute: ActivatedRoute, private recipeService: RecipeService) {
     this.subscription = activatedRoute.params.subscribe(
       (param: any) => {
-        this.id = Number(param.id);
+        this.recipeIndex = Number(param.id);
       }
     );
     activatedRoute.queryParams.subscribe(
@@ -32,9 +32,17 @@ export class RecipeDetailComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    if (this.id) {
-      this.selectedRecipe = this.recipeService.getRecipeById(this.id);
+    if (this.recipeIndex) {
+      this.selectedRecipe = this.recipeService.getRecipeById(this.recipeIndex);
     }
+  }
+
+  onEdit() {
+    this.router.navigate(['/recipes', this.recipeIndex, 'edit']);
+  }
+
+  onDelete() {
+    this.router.navigate(['/recipes']);
   }
 
   ngOnDestroy() {

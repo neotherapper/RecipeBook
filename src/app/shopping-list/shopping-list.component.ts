@@ -18,6 +18,10 @@ export class ShoppingListComponent implements OnInit {
     this.items = this.sls.getItmes();
   }
 
+  onCleared() {
+    this.selectedItem = null;
+  }
+
   onSelectItem(item: Ingredient) {
     this.selectedItem = item;
   }

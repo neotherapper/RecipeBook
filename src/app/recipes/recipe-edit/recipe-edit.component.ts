@@ -1,10 +1,10 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormArray, FormGroup, FormControl, FormBuilder, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-
-import { Recipe } from './../recipe';
 import { Subscription } from 'rxjs/Subscription';
 
+import { Recipe } from './../recipe';
+import { Ingredient } from './../../shared/ingredient';
 import { RecipeService } from '../recipe.service';
 @Component({
   selector: 'app-recipe-edit',
@@ -41,6 +41,22 @@ export class RecipeEditComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.subscription.unsubscribe();
+  }
+
+  onAddItem(name: string, amount: string) {
+    (<FormArray>this.recipeForm.controls.ingredients).push(
+      new FormGroup({
+        name: new FormControl(name, Validators.required),
+        amount: new FormControl(Number(amount), [
+          Validators.required,
+          Validators.pattern('\\d+')
+        ])
+      })
+    );
+  }
+
+  onRemoveItem(index: number) {
+    (<FormArray>this.recipeForm.controls.ingredients).removeAt(index);
   }
 
   onCancel() {
@@ -91,7 +107,7 @@ export class RecipeEditComponent implements OnInit, OnDestroy {
   }
 
   private navigateBack() {
-    this.router.navigate(['../']);
+    this.router.navigate(['../'], { relativeTo: this.activatedRoute});
   }
 
 }

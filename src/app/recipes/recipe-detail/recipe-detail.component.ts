@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, Input } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs/Subscription';
 
@@ -11,37 +11,36 @@ import { RecipeService } from '../recipe.service';
   styleUrls: ['./recipe-detail.component.css']
 })
 export class RecipeDetailComponent implements OnInit, OnDestroy {
-  private subscription: Subscription;
-  private recipeIndex: number;
-  @Input() selectedRecipe: Recipe;
-
+  selectedRecipe: Recipe;
   omg: string;
+  private subscription: Subscription;
+  private recipeId: number;
 
-  constructor(private sls: ShoppingListService, private router: Router,
-    private activatedRoute: ActivatedRoute, private recipeService: RecipeService) {
-    this.subscription = activatedRoute.params.subscribe(
+  constructor(private sls: ShoppingListService,
+    private router: Router,
+    private activatedRoute: ActivatedRoute,
+    private recipeService: RecipeService) {}
+
+  ngOnInit() {
+    this.subscription = this.activatedRoute.params.subscribe(
       (param: any) => {
-        this.recipeIndex = Number(param.id);
+        this.recipeId = Number(param.id);
+        this.selectedRecipe = this.recipeService.getRecipeById(this.recipeId);
       }
     );
-    activatedRoute.queryParams.subscribe(
+    this.activatedRoute.queryParams.subscribe(
       (param: any) => {
         this.omg = param.analytics;
       }
     );
   }
 
-  ngOnInit() {
-    if (this.recipeIndex) {
-      this.selectedRecipe = this.recipeService.getRecipeById(this.recipeIndex);
-    }
-  }
-
   onEdit() {
-    this.router.navigate(['/recipes', this.recipeIndex, 'edit']);
+    this.router.navigate(['/recipes', this.recipeId, 'edit']);
   }
 
   onDelete() {
+    this.recipeService.deleteRecipe(this.selectedRecipe);
     this.router.navigate(['/recipes']);
   }
 

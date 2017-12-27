@@ -1,9 +1,10 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormArray, FormGroup, FormControl, FormBuilder, Validators } from '@angular/forms';
+import { ActivatedRoute, Router } from '@angular/router';
 
 import { Recipe } from './../recipe';
 import { Subscription } from 'rxjs/Subscription';
-import { ActivatedRoute } from '@angular/router';
+
 import { RecipeService } from '../recipe.service';
 @Component({
   selector: 'app-recipe-edit',
@@ -19,7 +20,8 @@ export class RecipeEditComponent implements OnInit, OnDestroy {
 
   constructor(private activatedRoute: ActivatedRoute,
     private recipeService: RecipeService,
-    private formBuilder: FormBuilder) { }
+    private formBuilder: FormBuilder,
+    private router: Router) { }
 
   ngOnInit() {
     this.subscription = this.activatedRoute.params.subscribe(
@@ -39,6 +41,22 @@ export class RecipeEditComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.subscription.unsubscribe();
+  }
+
+  onCancel() {
+    this.navigateBack();
+  }
+
+  onSubmit() {
+    const newRecipe = this.recipeForm.value;
+    if (this.isNew) {
+      newRecipe.id = Math.floor(Math.random() * 10000);
+      this.recipeService.addRecipe(newRecipe);
+    } else {
+      newRecipe.id = this.recipe.id;
+      this.recipeService.editRecipe(this.recipe, newRecipe);
+    }
+    this.navigateBack();
   }
 
   private initForm() {
@@ -70,6 +88,10 @@ export class RecipeEditComponent implements OnInit, OnDestroy {
       description: [recipeContent, Validators.required],
       ingredients: recipeIngredients
     });
+  }
+
+  private navigateBack() {
+    this.router.navigate(['../']);
   }
 
 }

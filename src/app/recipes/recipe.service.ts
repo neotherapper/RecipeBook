@@ -20,6 +20,14 @@ export class RecipeService {
 
   constructor() { }
 
+  addRecipe(recipe: Recipe) {
+    this.recipes.push(recipe);
+  }
+
+  editRecipe(oldRecipe: Recipe, newRecipe: Recipe) {
+    this.recipes[this.recipes.indexOf(oldRecipe)] = newRecipe;
+  }
+
   deleteRecipe(recipe: Recipe) {
     const index = this.recipes.indexOf(recipe);
     if (index !== - 1) {

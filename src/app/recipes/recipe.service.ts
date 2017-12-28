@@ -20,7 +20,29 @@ export class RecipeService {
 
   constructor() { }
 
-  getRecipes() {
+  addRecipe(recipe: Recipe) {
+    this.recipes.push(recipe);
+  }
+
+  editRecipe(oldRecipe: Recipe, newRecipe: Recipe) {
+    this.recipes[this.recipes.indexOf(oldRecipe)] = newRecipe;
+  }
+
+  deleteRecipe(recipe: Recipe) {
+    const index = this.recipes.indexOf(recipe);
+    if (index !== - 1) {
+      this.recipes.splice(index, 1);
+    }
+  }
+
+  deleteRecipeById(id: number) {
+    const index = this.recipes.findIndex((recipe) => recipe.id === id);
+    if (index !== -1) {
+      this.recipes.splice(index, 1);
+    }
+  }
+
+  getRecipes(): Recipe[] {
     return this.recipes;
   }
 

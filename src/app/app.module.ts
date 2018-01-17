@@ -9,6 +9,7 @@ import { AngularFireAuthModule } from 'angularfire2/auth';
 import { initializeApp } from 'firebase/app';
 
 import { AuthenticationService } from './shared/authentication.service';
+import { FirebaseUtilsService } from './shared/firebase-utils.service';
 
 import { AppComponent } from './app.component';
 import { HeaderComponent } from './header.component';
@@ -23,7 +24,6 @@ import { routing } from './app.routing';
 import { HomeComponent } from './home/home.component';
 import { RecipeEditComponent } from './recipes/recipe-edit/recipe-edit.component';
 import { RecipeStartComponent } from './recipes/recipe-start/recipe-start.component';
-
 
   // Initialize Firebase
   const firebaseConfig = {
@@ -66,6 +66,7 @@ import { RecipeStartComponent } from './recipes/recipe-start/recipe-start.compon
   providers: [
     AuthenticationService,
     RecipeService,
+    FirebaseUtilsService,
     ShoppingListService
   ],
   bootstrap: [AppComponent]

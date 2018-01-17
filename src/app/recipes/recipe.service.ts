@@ -2,51 +2,61 @@ import { Injectable } from '@angular/core';
 
 import { Recipe } from './recipe';
 import { Ingredient } from '../shared/ingredient';
-
+import {
+  AngularFirestore,
+  AngularFirestoreCollection,
+  AngularFirestoreDocument
+} from 'angularfire2/firestore';
+import { Observable } from 'rxjs/Observable';
+import { RecipeI } from './recipe.interface';
+import { FirebaseUtilsService } from '../shared/firebase-utils.service';
 @Injectable()
 export class RecipeService {
-  private recipes: Recipe[] = [
-    new Recipe(1, 'Schnitzel', 'Very tasty',
-      'https://static4.depositphotos.com/1012068/297/i/950/depositphotos_2970374-stock-photo-viennese-schnitzel-escalope.jpg', [
-        new Ingredient('French Fries', 2),
-        new Ingredient('Pork Neat', 1)
-      ]),
-    new Recipe(2, 'Summer Salad', 'Okayish',
-      'https://ohmyveggies.com/wp-content/uploads/2013/06/the_perfect_summer_salad.jpg', [
-        new Ingredient('watermelon', 1),
-        new Ingredient('wild rocket', 1)
-      ])
-  ];
+  private recipesRef: AngularFirestoreCollection<Recipe>;
+  private recipeRef: AngularFirestoreDocument<Recipe>;
+  private newRecipes: Observable<Recipe[]>;
 
-  constructor() { }
-
-  addRecipe(recipe: Recipe) {
-    this.recipes.push(recipe);
+  constructor(private afs: AngularFirestore,
+    private firebaseUtilsService: FirebaseUtilsService) {
+    this.recipesRef = this.afs.collection('recipes');
+    this.newRecipes = this.recipesRef.snapshotChanges()
+      .map(actions => {
+        return actions.map(a => {
+          return {
+            id: a.payload.doc.id,
+            ...a.payload.doc.data()
+          } as RecipeI;
+        });
+      });
   }
 
-  editRecipe(oldRecipe: Recipe, newRecipe: Recipe) {
-    this.recipes[this.recipes.indexOf(oldRecipe)] = newRecipe;
+  addRecipe(recipe: Recipe): void {
+    this.recipesRef.add(recipe);
   }
 
-  deleteRecipe(recipe: Recipe) {
-    const index = this.recipes.indexOf(recipe);
-    if (index !== - 1) {
-      this.recipes.splice(index, 1);
-    }
+  editRecipe(id: string, newRecipe: Recipe): void {
+    this.recipesRef.doc(id).update(newRecipe);
   }
 
-  deleteRecipeById(id: number) {
-    const index = this.recipes.findIndex((recipe) => recipe.id === id);
-    if (index !== -1) {
-      this.recipes.splice(index, 1);
-    }
+  deleteRecipeById(id: string): void {
+    this.recipesRef.doc(id).delete();
   }
 
-  getRecipes(): Recipe[] {
-    return this.recipes;
+  filterRecipesByName(name: string): Observable<Recipe[]> {
+    let recipes: AngularFirestoreCollection<Recipe>;
+    recipes =  this.afs.collection('recipes',
+      ref => ref.where('name', '==', name)
+    );
+    return recipes.snapshotChanges()
+      .map(this.firebaseUtilsService.getDataAndIdFromDocument);
   }
 
-  getRecipeById(id: number): Recipe {
-    return this.recipes.filter((recipe) => recipe.id === id)[0];
+  getRecipeById(id: string): Observable<Recipe> {
+    this.recipeRef = this.recipesRef.doc(id);
+    return this.recipeRef.valueChanges();
+  }
+
+  getRecipes(): Observable<Recipe[]> {
+    return this.newRecipes;
   }
 }

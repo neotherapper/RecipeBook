@@ -52,7 +52,7 @@ export class RecipeService {
     );
     return recipes.snapshotChanges()
       .pipe(
-        map(this.firebaseUtilsService.getDataAndIdFromDocument);
+        map(this.firebaseUtilsService.getDataAndIdFromDocument)
       );
   }
 

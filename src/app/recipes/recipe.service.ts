@@ -7,7 +7,8 @@ import {
   AngularFirestoreCollection,
   AngularFirestoreDocument
 } from 'angularfire2/firestore';
-import { Observable } from 'rxjs/Observable';
+import { Observable, } from 'rxjs';
+import { map, filter, catchError, mergeMap } from 'rxjs/operators';
 import { RecipeI } from './recipe.interface';
 import { FirebaseUtilsService } from '../shared/firebase-utils.service';
 @Injectable()
@@ -20,14 +21,16 @@ export class RecipeService {
     private firebaseUtilsService: FirebaseUtilsService) {
     this.recipesRef = this.afs.collection('recipes');
     this.newRecipes = this.recipesRef.snapshotChanges()
-      .map(actions => {
-        return actions.map(a => {
-          return {
-            id: a.payload.doc.id,
-            ...a.payload.doc.data()
-          } as RecipeI;
-        });
-      });
+      .pipe(
+        map(actions => {
+          return actions.map(a => {
+            return {
+              id: a.payload.doc.id,
+              ...a.payload.doc.data()
+            } as RecipeI;
+          });
+        })
+      );
   }
 
   addRecipe(recipe: Recipe): void {
@@ -48,7 +51,9 @@ export class RecipeService {
       ref => ref.where('name', '==', name)
     );
     return recipes.snapshotChanges()
-      .map(this.firebaseUtilsService.getDataAndIdFromDocument);
+      .pipe(
+        map(this.firebaseUtilsService.getDataAndIdFromDocument);
+      );
   }
 
   getRecipeById(id: string): Observable<Recipe> {

@@ -2,7 +2,7 @@ import { Component, OnInit, EventEmitter, Output } from '@angular/core';
 
 import { Recipe } from '../recipe';
 import { RecipeService } from './../recipe.service';
-import { Observable } from 'rxjs/Observable';
+import { Observable } from 'rxjs';
 @Component({
   selector: 'app-recipe-list',
   templateUrl: './recipe-list.component.html',

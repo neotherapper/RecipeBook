@@ -6,7 +6,7 @@ export class FirebaseUtilsService {
 
   constructor() { }
 
-  getDataAndIdFromDocument(actions: DocumentChangeAction[]): any {
+  getDataAndIdFromDocument(actions: DocumentChangeAction<any>[]): any {
     return actions.map(
       action => {
         return {

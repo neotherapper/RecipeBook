@@ -4,6 +4,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpModule } from '@angular/http';
 
 import { AngularFireModule } from 'angularfire2';
+import { AngularFireStorageModule } from 'angularfire2/storage';
 import { AngularFirestoreModule } from 'angularfire2/firestore';
 import { AngularFireAuthModule } from 'angularfire2/auth';
 import { initializeApp } from 'firebase/app';
@@ -56,7 +57,8 @@ import { RecipeStartComponent } from './recipes/recipe-start/recipe-start.compon
     ReactiveFormsModule,
     HttpModule,
     AngularFireModule.initializeApp(firebaseConfig),
-    AngularFirestoreModule,
+    AngularFireStorageModule,
+    AngularFirestoreModule.enablePersistence(),
     AngularFireAuthModule,
     routing
   ],

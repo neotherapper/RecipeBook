@@ -1,5 +1,6 @@
-<a [routerLink]="[recipe.id]" [queryParams]="{analytics: 1}" class="list-group-item clearfix"
-   routerLinkActive="active">
+<a [routerLink]="[recipe.id]" class="list-group-item clearfix"
+   [routerLinkActive]="['active']"
+   [routerLinkActiveOptions]="{exact: false}">
   <div class="pull-left">
     <h4 class="list-group-item-heading">{{recipe.name}}</h4>
     <p class="list-group-item-text">{{recipe.description}}</p>

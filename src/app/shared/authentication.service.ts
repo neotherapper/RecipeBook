@@ -18,4 +18,16 @@ export class AuthenticationService {
   logout() {
     this.afAuth.auth.signOut();
   }
+
+  signup(email: string, password: string) {
+    this.afAuth
+      .auth
+      .createUserWithEmailAndPassword(email, password)
+      .then(value => {
+        console.log('Success!', value);
+      })
+      .catch(err => {
+        console.log('Something went wrong:', err.message);
+      });
+  }
 }

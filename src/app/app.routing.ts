@@ -10,6 +10,8 @@ const APP_ROUTES: Routes = [
     { path: '', component: HomeComponent },
     { path: 'recipes', component: RecipesComponent, children: RECIPE_ROUTES },
     { path: 'shopping-list', component: ShoppingListComponent }
+    // { path: 'signin', component: SigninComponent }
+    // { path: 'signup', component: SignupComponent }
 ];
 
 export const routing = RouterModule.forRoot(APP_ROUTES);

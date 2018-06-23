@@ -25,6 +25,7 @@ import { routing } from './app.routing';
 import { HomeComponent } from './home/home.component';
 import { RecipeEditComponent } from './recipes/recipe-edit/recipe-edit.component';
 import { RecipeStartComponent } from './recipes/recipe-start/recipe-start.component';
+import { MyRecipesComponent } from './recipes/my-recipes/my-recipes.component';
 
   // Initialize Firebase
   const firebaseConfig = {
@@ -49,7 +50,8 @@ import { RecipeStartComponent } from './recipes/recipe-start/recipe-start.compon
     DropdownDirective,
     HomeComponent,
     RecipeEditComponent,
-    RecipeStartComponent
+    RecipeStartComponent,
+    MyRecipesComponent
   ],
   imports: [
     BrowserModule,

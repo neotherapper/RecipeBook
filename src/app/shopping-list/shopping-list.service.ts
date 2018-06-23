@@ -12,6 +12,7 @@ export class ShoppingListService {
   }
 
   addItems(items: Ingredient[]) {
+    console.log('%caddItems', 'color:red', items);
     Array.prototype.push.apply(this.items, items);
   }
 

@@ -13,8 +13,8 @@ import { RecipeService } from '../recipe.service';
 export class RecipeDetailComponent implements OnInit, OnDestroy {
   selectedRecipe: Observable<Recipe>;
   omg: string;
+  selectedRecipeSnapshot: Recipe;
   private subscription: Subscription;
-  private subscription2: Subscription;
   private recipeId: string;
 
   constructor(private sls: ShoppingListService,
@@ -27,6 +27,9 @@ export class RecipeDetailComponent implements OnInit, OnDestroy {
       (param: any) => {
         this.recipeId = param.id;
         this.selectedRecipe = this.recipeService.getRecipeById(this.recipeId);
+        this.selectedRecipe.subscribe((recipe: Recipe) => {
+          this.selectedRecipeSnapshot = recipe;
+        });
       }
     );
     this.activatedRoute.queryParams.subscribe(
@@ -45,15 +48,17 @@ export class RecipeDetailComponent implements OnInit, OnDestroy {
     this.router.navigate(['/recipes']);
   }
 
-  ngOnDestroy() {
-    this.subscription.unsubscribe();
+  onAddToShoppingList() {
+    this.sls.addItems(this.selectedRecipeSnapshot.ingredients);
   }
 
-  onAddToShoppingList() {
-    this.subscription2 = this.selectedRecipe.subscribe(
-      (recipe: Recipe) => {
-        this.sls.addItems(recipe.ingredients);
-      }
-    );
+  onAddToUserRecipes() {
+    this.recipeService.addRecipeByLoggedInUser(this.selectedRecipeSnapshot);
+  }
+
+  ngOnDestroy() {
+    if (this.subscription) {
+      this.subscription.unsubscribe();
+    }
   }
 }

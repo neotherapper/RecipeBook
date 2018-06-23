@@ -7,18 +7,25 @@ import {
   AngularFirestoreCollection,
   AngularFirestoreDocument
 } from 'angularfire2/firestore';
-import { Observable, } from 'rxjs';
-import { map, filter, catchError, mergeMap } from 'rxjs/operators';
+import { Observable, of} from 'rxjs';
+import { map } from 'rxjs/operators';
 import { RecipeI } from './recipe.interface';
 import { FirebaseUtilsService } from '../shared/firebase-utils.service';
+import { AngularFireAuth } from 'angularfire2/auth';
+
 @Injectable()
 export class RecipeService {
   private recipesRef: AngularFirestoreCollection<Recipe>;
+  private recipesByLoggedInUserRef: AngularFirestoreCollection<Recipe>;
   private recipeRef: AngularFirestoreDocument<Recipe>;
   private newRecipes: Observable<Recipe[]>;
+  private recipesByLoggedInUser: Observable<Recipe[]>;
+  userId: string;
 
   constructor(private afs: AngularFirestore,
-    private firebaseUtilsService: FirebaseUtilsService) {
+    private firebaseUtilsService: FirebaseUtilsService,
+    private afAuth: AngularFireAuth) {
+
     this.recipesRef = this.afs.collection('recipes');
     this.newRecipes = this.recipesRef.snapshotChanges()
       .pipe(
@@ -31,10 +38,15 @@ export class RecipeService {
           });
         })
       );
+    this.initiateGetRecipes();
   }
 
   addRecipe(recipe: Recipe): void {
     this.recipesRef.add(recipe);
+  }
+
+  addRecipeByLoggedInUser(recipe: Recipe): void {
+    this.recipesByLoggedInUserRef.add(recipe);
   }
 
   editRecipe(id: string, newRecipe: Recipe): void {
@@ -63,5 +75,42 @@ export class RecipeService {
 
   getRecipes(): Observable<Recipe[]> {
     return this.newRecipes;
+  }
+
+  getRecipesByLoggedInUser(): Observable<Recipe[]> {
+    console.log('%cthis.userId', 'color:blue', this.userId);
+    console.log('%cgetRecipesByLoggedInUser', 'color:red', this.recipesByLoggedInUser);
+    if (!this.userId) {
+      return of([]);
+    }
+    return this.recipesByLoggedInUser;
+  }
+
+  // private functions
+
+  private initiateGetRecipes() {
+    this.afAuth.authState
+      .pipe(
+        map(user => user['uid'])
+      )
+      .subscribe(userId => {
+        this.userId = userId;
+        this.setRecipesByLoggedInUserRef(userId);
+      });
+  }
+
+  private setRecipesByLoggedInUserRef(userId) {
+    this.recipesByLoggedInUserRef = this.afs.collection('recipesbyuser').doc(`/${userId}`).collection('recipes');
+    this.recipesByLoggedInUser = this.recipesByLoggedInUserRef.snapshotChanges()
+      .pipe(
+        map(actions => {
+          return actions.map(ab => {
+            return {
+              id: ab.payload.doc.id,
+              ...ab.payload.doc.data()
+            } as RecipeI;
+          });
+        })
+      );
   }
 }

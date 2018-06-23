@@ -24,7 +24,7 @@
             <span class="caret"></span></a>
           <ul class="dropdown-menu">
             <li><a (click)="onLogin()" *ngIf="!auth.user | async">Login</a></li>
-            <li><a href="#">Another action</a></li>
+            <li><a [routerLink]="['/myrecipes']">My Recipes</a></li>
             <li><a href="#">Something else here</a></li>
             <li role="separator" class="divider"></li>
             <li><a (click)="onLogout()">Logout</a></li>

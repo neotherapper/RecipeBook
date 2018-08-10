@@ -1,12 +1,21 @@
 <div class="row">
   <div class="col-xs-12">
-    <a class="btn btn-success">New Recipe</a>
+    <a class="btn btn-success" [routerLink]="['new']">New Recipe</a>
   </div>
 </div>
+<br>
+<div class="row">
+  <div class="col-xs-12">
+    <label for="filterRecipes">Filter Reipes (press enter): </label>
+    <input class="form-control" id="filterRecipes" type="text" #filterRecipes (keyup.enter)="onFilterRecipes(filterRecipes.value)">
+  </div>
+</div>
+<br>
 <div class="row">
   <div class="col-xs-12">
     <ul class="list-group">
-      <app-recipe-item *ngFor="let recipe of recipes" [recipe]="recipe" (click)="onSelected(recipe)"></app-recipe-item>
+      <app-recipe-item *ngFor="let recipe of recipes | async; let i = index"
+      [recipe]="recipe" (click)="onSelected(recipe)"></app-recipe-item>
     </ul>
   </div>
 </div>

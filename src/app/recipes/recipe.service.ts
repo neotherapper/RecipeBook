@@ -1,20 +1,67 @@
 import { Injectable } from '@angular/core';
 
 import { Recipe } from './recipe';
-
+import { Ingredient } from '../shared/ingredient';
+import {
+  AngularFirestore,
+  AngularFirestoreCollection,
+  AngularFirestoreDocument
+} from 'angularfire2/firestore';
+import { Observable, } from 'rxjs';
+import { map, filter, catchError, mergeMap } from 'rxjs/operators';
+import { RecipeI } from './recipe.interface';
+import { FirebaseUtilsService } from '../shared/firebase-utils.service';
 @Injectable()
 export class RecipeService {
-  private recipes: Recipe[] = [
-    new Recipe('Schnitzel', 'Very tasty',
-      'https://static4.depositphotos.com/1012068/297/i/950/depositphotos_2970374-stock-photo-viennese-schnitzel-escalope.jpg', []),
-    new Recipe('Summer Salad', 'Okayish',
-      'https://ohmyveggies.com/wp-content/uploads/2013/06/the_perfect_summer_salad.jpg', [])
-  ];
+  private recipesRef: AngularFirestoreCollection<Recipe>;
+  private recipeRef: AngularFirestoreDocument<Recipe>;
+  private newRecipes: Observable<Recipe[]>;
 
-  constructor() { }
-
-  getRecipes() {
-    return this.recipes;
+  constructor(private afs: AngularFirestore,
+    private firebaseUtilsService: FirebaseUtilsService) {
+    this.recipesRef = this.afs.collection('recipes');
+    this.newRecipes = this.recipesRef.snapshotChanges()
+      .pipe(
+        map(actions => {
+          return actions.map(a => {
+            return {
+              id: a.payload.doc.id,
+              ...a.payload.doc.data()
+            } as RecipeI;
+          });
+        })
+      );
   }
 
+  addRecipe(recipe: Recipe): void {
+    this.recipesRef.add(recipe);
+  }
+
+  editRecipe(id: string, newRecipe: Recipe): void {
+    this.recipesRef.doc(id).update(newRecipe);
+  }
+
+  deleteRecipeById(id: string): void {
+    this.recipesRef.doc(id).delete();
+  }
+
+  filterRecipesByName(name: string): Observable<Recipe[]> {
+    let recipes: AngularFirestoreCollection<Recipe>;
+    recipes =  this.afs.collection('recipes',
+      ref => ref.where('name', '==', name)
+    );
+    return recipes.snapshotChanges()
+      .pipe(
+        map(this.firebaseUtilsService.getDataAndIdFromDocument)
+      );
+  }
+
+  getRecipeById(id: string): Observable<Recipe> {
+    this.recipeRef = this.recipesRef.doc(id);
+    return this.recipeRef.valueChanges();
+  }
+
+  getRecipes(): Observable<Recipe[]> {
+    return this.newRecipes;
+  }
 }
